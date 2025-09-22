@@ -39,4 +39,9 @@ extension NonEmpty where Collection: RangeReplaceableCollection {
     coll.append(contentsOf: tail)
     self.init(rawValue: coll)!
   }
+  
+  @inlinable @inline(__always)
+  public init(head: Element, tail: Element...) {
+    self.init(head: head, tail: tail)
+  }
 }
