@@ -12,6 +12,7 @@ extension NonEmpty {
     transform(&rawValue)
   }
   
+  /// _modify accessor for mutation
   @_spi(NonEmptyExternallyExtendable)
   @inlinable @inline(__always)
   public var _rawValueMutable: Collection {
