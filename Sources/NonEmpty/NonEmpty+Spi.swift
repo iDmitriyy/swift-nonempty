@@ -18,4 +18,12 @@ extension NonEmpty {
       yield &rawValue
     }
   }
+    
+  @_spi(NonEmptyExternallyExtendable)
+  public init(_nonEmptyRawValueBuilder: () -> Collection) {
+    let assumedNonEmptyRawValue = _nonEmptyRawValueBuilder()
+    precondition(!assumedNonEmptyRawValue.isEmpty,
+                 "Can't construct \(Self.self) from _nonEmptyRawValueBuilder that returns empty collection")
+    self.init(rawValue: assumedNonEmptyRawValue)!
+  }
 }
