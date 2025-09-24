@@ -6,19 +6,11 @@
 //
 
 extension NonEmpty {
-  // @inlinable @inline(__always)
-  @_spi(NonEmptyExternallyExtendable)
-  public mutating func _mutateRawValue(_ transform: (inout Collection) -> Void) {
-    transform(&rawValue)
-  }
-  
   /// _modify accessor for mutation
   @_spi(NonEmptyExternallyExtendable)
   @inlinable @inline(__always)
-  public var _rawValueMutable: Collection {
-    get { rawValue }
-    _modify {
-      yield &rawValue
-    }
+  public var _rawValueReadModify: Collection {
+    read { yield rawValue }
+    modify { yield &rawValue }
   }
 }

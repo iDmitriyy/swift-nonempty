@@ -9,7 +9,8 @@ let package = Package(
   targets: [
     .target(name: "NonEmpty", dependencies: []),
     .testTarget(name: "NonEmptyTests", dependencies: ["NonEmpty"]),
-  ]
+  ],
+  swiftLanguageModes: [.v6],
 )
 
 for target: PackageDescription.Target in package.targets {
