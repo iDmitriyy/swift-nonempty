@@ -1,10 +1,10 @@
 extension NonEmpty: ExpressibleByDictionaryLiteral
-where Collection: ExpressibleByDictionaryLiteral {
-  public init(dictionaryLiteral elements: (Collection.Key, Collection.Value)...) {
+where Base: ExpressibleByDictionaryLiteral {
+  public init(dictionaryLiteral elements: (Base.Key, Base.Value)...) {
     precondition(!elements.isEmpty, "Can't construct \(Self.self) from empty dictionary literal")
     let f = unsafeBitCast(
-      Collection.init(dictionaryLiteral:),
-      to: (([(Collection.Key, Collection.Value)]) -> Collection).self
+      Base.init(dictionaryLiteral:),
+      to: (([(Base.Key, Base.Value)]) -> Base).self
     )
     self.init(rawValue: f(elements))!
   }

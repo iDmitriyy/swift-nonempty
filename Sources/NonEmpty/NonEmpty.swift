@@ -1,16 +1,16 @@
 @dynamicMemberLookup
-public struct NonEmpty<Collection: NonEmptyCompatibleCollection>: Swift.Collection {
-  public typealias Element = Collection.Element
-  public typealias Index = Collection.Index
+public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
+  public typealias Element = Base.Element
+  public typealias Index = Base.Index
 
-  public internal(set) var rawValue: Collection
+  public internal(set) var rawValue: Base
 
-  public init?(rawValue: Collection) {
+  public init?(rawValue: Base) {
     guard !rawValue.isEmpty else { return nil }
     self.rawValue = rawValue
   }
 
-  public subscript<Subject>(dynamicMember keyPath: KeyPath<Collection, Subject>) -> Subject {
+  public subscript<Subject>(dynamicMember keyPath: KeyPath<Base, Subject>) -> Subject {
     self.rawValue[keyPath: keyPath]
   }
 
@@ -74,22 +74,22 @@ extension NonEmpty: CustomStringConvertible {
   }
 }
 
-extension NonEmpty: Equatable where Collection: Equatable {}
+extension NonEmpty: Equatable where Base: Equatable {}
 
-extension NonEmpty: Hashable where Collection: Hashable {}
+extension NonEmpty: Hashable where Base: Hashable {}
 
-extension NonEmpty: Comparable where Collection: Comparable {
+extension NonEmpty: Comparable where Base: Comparable {
   public static func < (lhs: Self, rhs: Self) -> Bool {
     lhs.rawValue < rhs.rawValue
   }
 }
 
 #if canImport(_Concurrency) && compiler(>=5.5)
-  extension NonEmpty: Sendable where Collection: Sendable {}
+  extension NonEmpty: Sendable where Base: Sendable {}
 #endif
 
-extension NonEmpty: Encodable where Collection: Encodable {
-  public func encode(to encoder: Encoder) throws {
+extension NonEmpty: Encodable where Base: Encodable {
+  public func encode(to encoder: any Encoder) throws {
     do {
       var container = encoder.singleValueContainer()
       try container.encode(self.rawValue)
@@ -99,13 +99,13 @@ extension NonEmpty: Encodable where Collection: Encodable {
   }
 }
 
-extension NonEmpty: Decodable where Collection: Decodable {
-  public init(from decoder: Decoder) throws {
-    let collection: Collection
+extension NonEmpty: Decodable where Base: Decodable {
+  public init(from decoder: any Decoder) throws {
+    let collection: Base
     do {
-      collection = try decoder.singleValueContainer().decode(Collection.self)
+      collection = try decoder.singleValueContainer().decode(Base.self)
     } catch {
-      collection = try Collection(from: decoder)
+      collection = try Base(from: decoder)
     }
 
     guard !collection.isEmpty else {
@@ -119,7 +119,7 @@ extension NonEmpty: Decodable where Collection: Decodable {
 
 extension NonEmpty: RawRepresentable {}
 
-extension NonEmpty where Collection.Element: Comparable {
+extension NonEmpty where Base.Element: Comparable {
   public func max() -> Element {
     self.rawValue.max()!
   }
@@ -133,7 +133,7 @@ extension NonEmpty where Collection.Element: Comparable {
   }
 }
 
-extension NonEmpty: BidirectionalCollection where Collection: BidirectionalCollection {
+extension NonEmpty: BidirectionalCollection where Base: BidirectionalCollection {
   public func index(before i: Index) -> Index {
     self.rawValue.index(before: i)
   }
@@ -141,16 +141,16 @@ extension NonEmpty: BidirectionalCollection where Collection: BidirectionalColle
   public var last: Element { self.rawValue.last! }
 }
 
-extension NonEmpty: MutableCollection where Collection: MutableCollection {
+extension NonEmpty: MutableCollection where Base: MutableCollection {
   public subscript(position: Index) -> Element {
     _read { yield self.rawValue[position] }
     _modify { yield &self.rawValue[position] }
   }
 }
 
-extension NonEmpty: RandomAccessCollection where Collection: RandomAccessCollection {}
+extension NonEmpty: RandomAccessCollection where Base: RandomAccessCollection {}
 
-extension NonEmpty where Collection: MutableCollection & RandomAccessCollection {
+extension NonEmpty where Base: MutableCollection & RandomAccessCollection {
   public mutating func shuffle<T: RandomNumberGenerator>(using generator: inout T) {
     self.rawValue.shuffle(using: &generator)
   }

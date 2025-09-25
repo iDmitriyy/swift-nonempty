@@ -8,61 +8,61 @@ extension NonEmptyString {
 }
 
 extension NonEmpty: ExpressibleByUnicodeScalarLiteral
-where Collection: ExpressibleByUnicodeScalarLiteral {
-  public typealias UnicodeScalarLiteralType = Collection.UnicodeScalarLiteralType
+where Base: ExpressibleByUnicodeScalarLiteral {
+  public typealias UnicodeScalarLiteralType = Base.UnicodeScalarLiteralType
 
-  public init(unicodeScalarLiteral value: Collection.UnicodeScalarLiteralType) {
-    self.init(rawValue: Collection(unicodeScalarLiteral: value))!
+  public init(unicodeScalarLiteral value: Base.UnicodeScalarLiteralType) {
+    self.init(rawValue: Base(unicodeScalarLiteral: value))!
   }
 }
 
 extension NonEmpty: ExpressibleByExtendedGraphemeClusterLiteral
-where Collection: ExpressibleByExtendedGraphemeClusterLiteral {
-  public typealias ExtendedGraphemeClusterLiteralType = Collection
+where Base: ExpressibleByExtendedGraphemeClusterLiteral {
+  public typealias ExtendedGraphemeClusterLiteralType = Base
     .ExtendedGraphemeClusterLiteralType
 
-  public init(extendedGraphemeClusterLiteral value: Collection.ExtendedGraphemeClusterLiteralType) {
-    self.init(rawValue: Collection(extendedGraphemeClusterLiteral: value))!
+  public init(extendedGraphemeClusterLiteral value: Base.ExtendedGraphemeClusterLiteralType) {
+    self.init(rawValue: Base(extendedGraphemeClusterLiteral: value))!
   }
 }
 
-extension NonEmpty: ExpressibleByStringLiteral where Collection: ExpressibleByStringLiteral {
-  public typealias StringLiteralType = Collection.StringLiteralType
+extension NonEmpty: ExpressibleByStringLiteral where Base: ExpressibleByStringLiteral {
+  public typealias StringLiteralType = Base.StringLiteralType
 
-  public init(stringLiteral value: Collection.StringLiteralType) {
-    self.init(rawValue: Collection(stringLiteral: value))!
+  public init(stringLiteral value: Base.StringLiteralType) {
+    self.init(rawValue: Base(stringLiteral: value))!
   }
 }
 
-extension NonEmpty: TextOutputStreamable where Collection: TextOutputStreamable {
+extension NonEmpty: TextOutputStreamable where Base: TextOutputStreamable {
   public func write<Target>(to target: inout Target) where Target: TextOutputStream {
     self.rawValue.write(to: &target)
   }
 }
 
-extension NonEmpty: TextOutputStream where Collection: TextOutputStream {
+extension NonEmpty: TextOutputStream where Base: TextOutputStream {
   public mutating func write(_ string: String) {
     self.rawValue.write(string)
   }
 }
 
-extension NonEmpty: LosslessStringConvertible where Collection: LosslessStringConvertible {
+extension NonEmpty: LosslessStringConvertible where Base: LosslessStringConvertible {
   public init?(_ description: String) {
-    guard let string = Collection(description) else { return nil }
+    guard let string = Base(description) else { return nil }
     self.init(rawValue: string)
   }
 }
 
 extension NonEmpty: ExpressibleByStringInterpolation
 where
-  Collection: ExpressibleByStringInterpolation,
-  Collection.StringLiteralType == DefaultStringInterpolation.StringLiteralType
+  Base: ExpressibleByStringInterpolation,
+  Base.StringLiteralType == DefaultStringInterpolation.StringLiteralType
 {}
 
-extension NonEmpty where Collection: StringProtocol {
-  public typealias UTF8View = Collection.UTF8View
-  public typealias UTF16View = Collection.UTF16View
-  public typealias UnicodeScalarView = Collection.UnicodeScalarView
+extension NonEmpty where Base: StringProtocol {
+  public typealias UTF8View = Base.UTF8View
+  public typealias UTF16View = Base.UTF16View
+  public typealias UnicodeScalarView = Base.UnicodeScalarView
 
   public var utf8: UTF8View { self.rawValue.utf8 }
   public var utf16: UTF16View { self.rawValue.utf16 }
@@ -71,18 +71,18 @@ extension NonEmpty where Collection: StringProtocol {
   public init<C, Encoding>(
     decoding codeUnits: C, as sourceEncoding: Encoding.Type
   ) where C: Swift.Collection, Encoding: _UnicodeEncoding, C.Element == Encoding.CodeUnit {
-    self.init(rawValue: Collection(decoding: codeUnits, as: sourceEncoding))!
+    self.init(rawValue: Base(decoding: codeUnits, as: sourceEncoding))!
   }
 
   public init(cString nullTerminatedUTF8: UnsafePointer<CChar>) {
-    self.init(rawValue: Collection(cString: nullTerminatedUTF8))!
+    self.init(rawValue: Base(cString: nullTerminatedUTF8))!
   }
 
   public init<Encoding>(
     decodingCString nullTerminatedCodeUnits: UnsafePointer<Encoding.CodeUnit>,
     as sourceEncoding: Encoding.Type
   ) where Encoding: _UnicodeEncoding {
-    self.init(rawValue: Collection(decodingCString: nullTerminatedCodeUnits, as: sourceEncoding))!
+    self.init(rawValue: Base(decodingCString: nullTerminatedCodeUnits, as: sourceEncoding))!
   }
 
   public func withCString<Result>(_ body: (UnsafePointer<CChar>) throws -> Result) rethrows

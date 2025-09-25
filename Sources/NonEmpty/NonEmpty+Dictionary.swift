@@ -17,8 +17,8 @@ public protocol _DictionaryProtocol: Collection where Element == (key: Key, valu
 
 extension Dictionary: _DictionaryProtocol {}
 
-extension NonEmpty where Collection: _DictionaryProtocol {
-  public init(_ head: Element, _ tail: Collection) {
+extension NonEmpty where Base: _DictionaryProtocol {
+  public init(_ head: Element, _ tail: Base) {
     guard !tail.keys.contains(head.key) else { fatalError("Dictionary contains duplicate key") }
     var tail = tail
     tail[head.key] = head.value
@@ -27,8 +27,8 @@ extension NonEmpty where Collection: _DictionaryProtocol {
 
   public init(
     _ head: Element,
-    _ tail: Collection,
-    uniquingKeysWith combine: (Collection.Value, Collection.Value) throws -> Collection.Value
+    _ tail: Base,
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
   ) rethrows {
 
     var tail = tail
@@ -40,22 +40,22 @@ extension NonEmpty where Collection: _DictionaryProtocol {
     self.init(rawValue: tail)!
   }
 
-  public subscript(key: Collection.Key) -> Collection.Value? {
+  public subscript(key: Base.Key) -> Base.Value? {
     self.rawValue[key]
   }
 
   public mutating func merge<S: Sequence>(
     _ other: S,
-    uniquingKeysWith combine: (Collection.Value, Collection.Value) throws -> Collection.Value
-  ) rethrows where S.Element == (Collection.Key, Collection.Value) {
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
+  ) rethrows where S.Element == (Base.Key, Base.Value) {
 
     try self.rawValue.merge(other, uniquingKeysWith: combine)
   }
 
   public func merging<S: Sequence>(
     _ other: S,
-    uniquingKeysWith combine: (Collection.Value, Collection.Value) throws -> Collection.Value
-  ) rethrows -> NonEmpty where S.Element == (Collection.Key, Collection.Value) {
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
+  ) rethrows -> NonEmpty where S.Element == (Base.Key, Base.Value) {
 
     var copy = self
     try copy.merge(other, uniquingKeysWith: combine)
@@ -63,16 +63,16 @@ extension NonEmpty where Collection: _DictionaryProtocol {
   }
 
   public mutating func merge(
-    _ other: [Collection.Key: Collection.Value],
-    uniquingKeysWith combine: (Collection.Value, Collection.Value) throws -> Collection.Value
+    _ other: [Base.Key: Base.Value],
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
   ) rethrows {
 
     try self.rawValue.merge(other, uniquingKeysWith: combine)
   }
 
   public func merging(
-    _ other: [Collection.Key: Collection.Value],
-    uniquingKeysWith combine: (Collection.Value, Collection.Value) throws -> Collection.Value
+    _ other: [Base.Key: Base.Value],
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
   ) rethrows -> NonEmpty {
 
     var copy = self
@@ -81,21 +81,21 @@ extension NonEmpty where Collection: _DictionaryProtocol {
   }
 
   @discardableResult
-  public mutating func updateValue(_ value: Collection.Value, forKey key: Collection.Key)
-    -> Collection.Value?
+  public mutating func updateValue(_ value: Base.Value, forKey key: Base.Key)
+    -> Base.Value?
   {
     self.rawValue.updateValue(value, forKey: key)
   }
 }
 
-extension NonEmpty where Collection: _DictionaryProtocol, Collection.Value: Equatable {
+extension NonEmpty where Base: _DictionaryProtocol, Base.Value: Equatable {
   public static func == (lhs: NonEmpty, rhs: NonEmpty) -> Bool {
     return Dictionary(uniqueKeysWithValues: Array(lhs))
       == Dictionary(uniqueKeysWithValues: Array(rhs))
   }
 }
 
-extension NonEmpty where Collection: _DictionaryProtocol & ExpressibleByDictionaryLiteral {
+extension NonEmpty where Base: _DictionaryProtocol & ExpressibleByDictionaryLiteral {
   public init(_ head: Element) {
     self.init(rawValue: [head.key: head.value])!
   }

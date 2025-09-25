@@ -9,7 +9,7 @@ extension NonEmpty {
   /// _modify accessor for mutation
   @_spi(NonEmptyExternallyExtendable)
   @inlinable @inline(__always)
-  public var _rawValueReadModify: Collection {
+  public var _baseReadModify: Base {
     read { yield rawValue }
     modify { yield &rawValue }
   }
@@ -17,10 +17,10 @@ extension NonEmpty {
 
 public protocol NonEmptyCompatibleCollection: Collection {}
 
-extension Array: NonEmptyCompatibleCollection {}
-
-extension Set: NonEmptyCompatibleCollection {}
-
-extension Dictionary: NonEmptyCompatibleCollection {}
-
-extension String: NonEmptyCompatibleCollection {}
+//extension Array: NonEmptyCompatibleCollection {}
+//
+//extension Set: NonEmptyCompatibleCollection {}
+//
+//extension Dictionary: NonEmptyCompatibleCollection {}
+//
+//extension String: NonEmptyCompatibleCollection {}

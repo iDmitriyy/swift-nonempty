@@ -1,13 +1,13 @@
 // NB: `NonEmpty` does not conditionally conform to `RangeReplaceableCollection` because it contains destructive methods.
-extension NonEmpty where Collection: RangeReplaceableCollection {
+extension NonEmpty where Base: RangeReplaceableCollection {
   public init(_ head: Element, _ tail: Element...) {
     var tail = tail
     tail.insert(head, at: tail.startIndex)
-    self.init(rawValue: Collection(tail))!
+    self.init(rawValue: Base(tail))!
   }
 
-  public init?<S>(_ elements: S) where S: Sequence, Collection.Element == S.Element {
-    self.init(rawValue: Collection(elements))
+  public init?<S>(_ elements: S) where S: Sequence, Base.Element == S.Element {
+    self.init(rawValue: Base(elements))
   }
 
   public mutating func append(_ newElement: Element) {

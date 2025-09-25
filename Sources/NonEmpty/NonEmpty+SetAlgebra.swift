@@ -1,18 +1,18 @@
 public typealias NonEmptySet<Element> = NonEmpty<Set<Element>> where Element: Hashable
 
 // NB: `NonEmpty` does not conditionally conform to `SetAlgebra` because it contains destructive methods.
-extension NonEmpty where Collection: SetAlgebra, Collection.Element: Hashable {
-  public init(_ head: Collection.Element, _ tail: Collection.Element...) {
-    var tail = Collection(tail)
+extension NonEmpty where Base: SetAlgebra, Base.Element: Hashable {
+  public init(_ head: Base.Element, _ tail: Base.Element...) {
+    var tail = Base(tail)
     tail.insert(head)
     self.init(rawValue: tail)!
   }
 
-  public init?<S>(_ elements: S) where S: Sequence, Collection.Element == S.Element {
-    self.init(rawValue: Collection(elements))
+  public init?<S>(_ elements: S) where S: Sequence, Base.Element == S.Element {
+    self.init(rawValue: Base(elements))
   }
 
-  public func contains(_ member: Collection.Element) -> Bool {
+  public func contains(_ member: Base.Element) -> Bool {
     self.rawValue.contains(member)
   }
 
@@ -23,39 +23,39 @@ extension NonEmpty where Collection: SetAlgebra, Collection.Element: Hashable {
     return copy
   }
 
-  public func union(_ other: Collection) -> NonEmpty {
+  public func union(_ other: Base) -> NonEmpty {
     var copy = self
     copy.formUnion(other)
     return copy
   }
 
   @_disfavoredOverload
-  public func intersection(_ other: NonEmpty) -> Collection {
+  public func intersection(_ other: NonEmpty) -> Base {
     self.rawValue.intersection(other.rawValue)
   }
 
-  public func intersection(_ other: Collection) -> Collection {
+  public func intersection(_ other: Base) -> Base {
     self.rawValue.intersection(other)
   }
 
   @_disfavoredOverload
-  public func symmetricDifference(_ other: NonEmpty) -> Collection {
+  public func symmetricDifference(_ other: NonEmpty) -> Base {
     self.rawValue.symmetricDifference(other.rawValue)
   }
 
-  public func symmetricDifference(_ other: Collection) -> Collection {
+  public func symmetricDifference(_ other: Base) -> Base {
     self.rawValue.symmetricDifference(other)
   }
 
   @discardableResult
-  public mutating func insert(_ newMember: Collection.Element) -> (
-    inserted: Bool, memberAfterInsert: Collection.Element
+  public mutating func insert(_ newMember: Base.Element) -> (
+    inserted: Bool, memberAfterInsert: Base.Element
   ) {
     self.rawValue.insert(newMember)
   }
 
   @discardableResult
-  public mutating func update(with newMember: Collection.Element) -> Collection.Element? {
+  public mutating func update(with newMember: Base.Element) -> Base.Element? {
     self.rawValue.update(with: newMember)
   }
 
@@ -64,16 +64,16 @@ extension NonEmpty where Collection: SetAlgebra, Collection.Element: Hashable {
     self.rawValue.formUnion(other.rawValue)
   }
 
-  public mutating func formUnion(_ other: Collection) {
+  public mutating func formUnion(_ other: Base) {
     self.rawValue.formUnion(other)
   }
 
   @_disfavoredOverload
-  public func subtracting(_ other: NonEmpty) -> Collection {
+  public func subtracting(_ other: NonEmpty) -> Base {
     self.rawValue.subtracting(other.rawValue)
   }
 
-  public func subtracting(_ other: Collection) -> Collection {
+  public func subtracting(_ other: Base) -> Base {
     self.rawValue.subtracting(other)
   }
 
@@ -82,7 +82,7 @@ extension NonEmpty where Collection: SetAlgebra, Collection.Element: Hashable {
     self.rawValue.isDisjoint(with: other.rawValue)
   }
 
-  public func isDisjoint(with other: Collection) -> Bool {
+  public func isDisjoint(with other: Base) -> Bool {
     self.rawValue.isDisjoint(with: other)
   }
 
@@ -91,7 +91,7 @@ extension NonEmpty where Collection: SetAlgebra, Collection.Element: Hashable {
     self.rawValue.isSubset(of: other.rawValue)
   }
 
-  public func isSubset(of other: Collection) -> Bool {
+  public func isSubset(of other: Base) -> Bool {
     self.rawValue.isSubset(of: other)
   }
 
@@ -100,7 +100,7 @@ extension NonEmpty where Collection: SetAlgebra, Collection.Element: Hashable {
     self.rawValue.isSuperset(of: other.rawValue)
   }
 
-  public func isSuperset(of other: Collection) -> Bool {
+  public func isSuperset(of other: Base) -> Bool {
     self.rawValue.isSuperset(of: other)
   }
 
@@ -109,7 +109,7 @@ extension NonEmpty where Collection: SetAlgebra, Collection.Element: Hashable {
     self.rawValue.isStrictSubset(of: other.rawValue)
   }
 
-  public func isStrictSubset(of other: Collection) -> Bool {
+  public func isStrictSubset(of other: Base) -> Bool {
     self.rawValue.isStrictSubset(of: other)
   }
 
@@ -118,12 +118,12 @@ extension NonEmpty where Collection: SetAlgebra, Collection.Element: Hashable {
     self.rawValue.isStrictSuperset(of: other.rawValue)
   }
 
-  public func isStrictSuperset(of other: Collection) -> Bool {
+  public func isStrictSuperset(of other: Base) -> Bool {
     self.rawValue.isStrictSuperset(of: other)
   }
 }
 
-extension SetAlgebra where Self: NonEmptyCompatibleCollection, Element: Hashable {
+extension SetAlgebra where Self: Collection, Element: Hashable {
   public func union(_ other: NonEmpty<Self>) -> NonEmpty<Self> {
     var copy = other
     copy.formUnion(self)
