@@ -16,6 +16,9 @@ let package = Package(
 for target: PackageDescription.Target in package.targets {
   {
     var settings: [PackageDescription.SwiftSetting] = $0 ?? []
+    settings.append(.enableUpcomingFeature("ExistentialAny"))
+    settings.append(.enableUpcomingFeature("InternalImportsByDefault"))
+    settings.append(.enableUpcomingFeature("MemberImportVisibility"))
     settings.append(.enableExperimentalFeature("CoroutineAccessors"))
     $0 = settings
   }(&target.swiftSettings)
