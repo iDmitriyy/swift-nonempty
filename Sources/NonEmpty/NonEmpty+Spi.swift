@@ -15,6 +15,14 @@ extension NonEmpty {
   }
 }
 
+extension NonEmpty {
+  // @inlinable @inline(always) // https://github.com/swiftlang/swift/issues/50132
+  public init?(base: Base) {
+    guard !base.isEmpty else { return nil }
+    self.rawValue = base
+  }
+}
+
 public protocol NonEmptyCompatibleCollection: Collection {}
 
 //extension Array: NonEmptyCompatibleCollection {}
