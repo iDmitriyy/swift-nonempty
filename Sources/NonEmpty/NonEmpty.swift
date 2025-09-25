@@ -1,5 +1,5 @@
 @dynamicMemberLookup
-public struct NonEmpty<Collection: Swift.Collection>: Swift.Collection {
+public struct NonEmpty<Collection: NonEmptyCompatibleCollection>: Swift.Collection {
   public typealias Element = Collection.Element
   public typealias Index = Collection.Index
 

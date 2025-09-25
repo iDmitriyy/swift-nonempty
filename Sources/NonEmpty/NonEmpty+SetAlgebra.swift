@@ -123,7 +123,7 @@ extension NonEmpty where Collection: SetAlgebra, Collection.Element: Hashable {
   }
 }
 
-extension SetAlgebra where Self: Collection, Element: Hashable {
+extension SetAlgebra where Self: NonEmptyCompatibleCollection, Element: Hashable {
   public func union(_ other: NonEmpty<Self>) -> NonEmpty<Self> {
     var copy = other
     copy.formUnion(self)

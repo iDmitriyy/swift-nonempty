@@ -14,3 +14,13 @@ extension NonEmpty {
     modify { yield &rawValue }
   }
 }
+
+public protocol NonEmptyCompatibleCollection: Collection {}
+
+extension Array: NonEmptyCompatibleCollection {}
+
+extension Set: NonEmptyCompatibleCollection {}
+
+extension Dictionary: NonEmptyCompatibleCollection {}
+
+extension String: NonEmptyCompatibleCollection {}
