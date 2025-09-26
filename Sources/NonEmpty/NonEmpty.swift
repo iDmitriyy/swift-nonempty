@@ -39,12 +39,12 @@ public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
   }
 
   public func sorted(
-    by areInIncreasingOrder: (Element, Element) throws -> Bool
+    by areInIncreasingOrder: (Element, Element) throws -> Bool,
   ) rethrows -> NonEmpty<[Element]> {
-    NonEmpty<[Element]>(rawValue: try self._base.sorted(by: areInIncreasingOrder))!
+    try NonEmpty<[Element]>(rawValue: self._base.sorted(by: areInIncreasingOrder))!
   }
 
-  public func randomElement<T>(using generator: inout T) -> Element where T: RandomNumberGenerator {
+  public func randomElement(using generator: inout some RandomNumberGenerator) -> Element {
     self._base.randomElement(using: &generator)!
   }
 
@@ -52,8 +52,7 @@ public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
     self._base.randomElement()!
   }
 
-  public func shuffled<T>(using generator: inout T) -> NonEmpty<[Element]>
-  where T: RandomNumberGenerator {
+  public func shuffled(using generator: inout some RandomNumberGenerator) -> NonEmpty<[Element]> {
     NonEmpty<[Element]>(rawValue: self._base.shuffled(using: &generator))!
   }
 
@@ -62,19 +61,19 @@ public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
   }
 
   public func map<T>(_ transform: (Element) throws -> T) rethrows -> NonEmpty<[T]> {
-    NonEmpty<[T]>(rawValue: try self._base.map(transform))!
+    try NonEmpty<[T]>(rawValue: self._base.map(transform))!
   }
 
   public func flatMap<SegmentOfResult>(
-    _ transform: (Element) throws -> NonEmpty<SegmentOfResult>
+    _ transform: (Element) throws -> NonEmpty<SegmentOfResult>,
   ) rethrows -> NonEmpty<[SegmentOfResult.Element]> where SegmentOfResult: Sequence {
-    NonEmpty<[SegmentOfResult.Element]>(rawValue: try self._base.flatMap(transform))!
+    try NonEmpty<[SegmentOfResult.Element]>(rawValue: self._base.flatMap(transform))!
   }
 }
 
 extension NonEmpty: CustomStringConvertible {
   public var description: String {
-    return String(describing: self._base)
+    String(describing: self._base)
   }
 }
 
@@ -114,7 +113,7 @@ extension NonEmpty: Decodable where Base: Decodable {
 
     guard !collection.isEmpty else {
       throw DecodingError.dataCorrupted(
-        .init(codingPath: decoder.codingPath, debugDescription: "Non-empty collection expected")
+        .init(codingPath: decoder.codingPath, debugDescription: "Non-empty collection expected"),
       )
     }
     self.init(rawValue: collection)!
@@ -133,7 +132,7 @@ extension NonEmpty where Base.Element: Comparable {
   }
 
   public func sorted() -> NonEmpty<[Element]> {
-    return NonEmpty<[Element]>(rawValue: self._base.sorted())!
+    NonEmpty<[Element]>(rawValue: self._base.sorted())!
   }
 }
 
@@ -155,7 +154,7 @@ extension NonEmpty: MutableCollection where Base: MutableCollection {
 extension NonEmpty: RandomAccessCollection where Base: RandomAccessCollection {}
 
 extension NonEmpty where Base: MutableCollection & RandomAccessCollection {
-  public mutating func shuffle<T: RandomNumberGenerator>(using generator: inout T) {
+  public mutating func shuffle(using generator: inout some RandomNumberGenerator) {
     self._base.shuffle(using: &generator)
   }
 }
@@ -173,7 +172,6 @@ extension NonEmpty {
     modify { yield &_base }
   }
   
-  @_spi(NonEmptyExternallyExtendable)
   @inlinable @inline(__always)
   public init(_unsafeAssumedNonEmpty _assumedNonEmptyBase: Base) {
     guard !_assumedNonEmptyBase.isEmpty else {
@@ -191,6 +189,4 @@ extension NonEmpty {
     guard !base.isEmpty else { return nil }
     self._base = base
   }
-  
-  
 }
