@@ -41,7 +41,7 @@ extension NonEmpty where Base: _DictionaryProtocol {
   }
 
   public subscript(key: Base.Key) -> Base.Value? {
-    self.rawValue[key]
+    self._base[key]
   }
 
   public mutating func merge<S: Sequence>(
@@ -49,7 +49,7 @@ extension NonEmpty where Base: _DictionaryProtocol {
     uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
   ) rethrows where S.Element == (Base.Key, Base.Value) {
 
-    try self.rawValue.merge(other, uniquingKeysWith: combine)
+    try self._base.merge(other, uniquingKeysWith: combine)
   }
 
   public func merging<S: Sequence>(
@@ -67,7 +67,7 @@ extension NonEmpty where Base: _DictionaryProtocol {
     uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
   ) rethrows {
 
-    try self.rawValue.merge(other, uniquingKeysWith: combine)
+    try self._base.merge(other, uniquingKeysWith: combine)
   }
 
   public func merging(
@@ -84,7 +84,7 @@ extension NonEmpty where Base: _DictionaryProtocol {
   public mutating func updateValue(_ value: Base.Value, forKey key: Base.Key)
     -> Base.Value?
   {
-    self.rawValue.updateValue(value, forKey: key)
+    self._base.updateValue(value, forKey: key)
   }
 }
 

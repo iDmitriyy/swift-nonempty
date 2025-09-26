@@ -13,7 +13,7 @@ extension NonEmpty where Base: SetAlgebra, Base.Element: Hashable {
   }
 
   public func contains(_ member: Base.Element) -> Bool {
-    self.rawValue.contains(member)
+    self._base.contains(member)
   }
 
   @_disfavoredOverload
@@ -31,95 +31,95 @@ extension NonEmpty where Base: SetAlgebra, Base.Element: Hashable {
 
   @_disfavoredOverload
   public func intersection(_ other: NonEmpty) -> Base {
-    self.rawValue.intersection(other.rawValue)
+    self._base.intersection(other._base)
   }
 
   public func intersection(_ other: Base) -> Base {
-    self.rawValue.intersection(other)
+    self._base.intersection(other)
   }
 
   @_disfavoredOverload
   public func symmetricDifference(_ other: NonEmpty) -> Base {
-    self.rawValue.symmetricDifference(other.rawValue)
+    self._base.symmetricDifference(other._base)
   }
 
   public func symmetricDifference(_ other: Base) -> Base {
-    self.rawValue.symmetricDifference(other)
+    self._base.symmetricDifference(other)
   }
 
   @discardableResult
   public mutating func insert(_ newMember: Base.Element) -> (
     inserted: Bool, memberAfterInsert: Base.Element
   ) {
-    self.rawValue.insert(newMember)
+    self._base.insert(newMember)
   }
 
   @discardableResult
   public mutating func update(with newMember: Base.Element) -> Base.Element? {
-    self.rawValue.update(with: newMember)
+    self._base.update(with: newMember)
   }
 
   @_disfavoredOverload
   public mutating func formUnion(_ other: NonEmpty) {
-    self.rawValue.formUnion(other.rawValue)
+    self._base.formUnion(other._base)
   }
 
   public mutating func formUnion(_ other: Base) {
-    self.rawValue.formUnion(other)
+    self._base.formUnion(other)
   }
 
   @_disfavoredOverload
   public func subtracting(_ other: NonEmpty) -> Base {
-    self.rawValue.subtracting(other.rawValue)
+    self._base.subtracting(other._base)
   }
 
   public func subtracting(_ other: Base) -> Base {
-    self.rawValue.subtracting(other)
+    self._base.subtracting(other)
   }
 
   @_disfavoredOverload
   public func isDisjoint(with other: NonEmpty) -> Bool {
-    self.rawValue.isDisjoint(with: other.rawValue)
+    self._base.isDisjoint(with: other._base)
   }
 
   public func isDisjoint(with other: Base) -> Bool {
-    self.rawValue.isDisjoint(with: other)
+    self._base.isDisjoint(with: other)
   }
 
   @_disfavoredOverload
   public func isSubset(of other: NonEmpty) -> Bool {
-    self.rawValue.isSubset(of: other.rawValue)
+    self._base.isSubset(of: other._base)
   }
 
   public func isSubset(of other: Base) -> Bool {
-    self.rawValue.isSubset(of: other)
+    self._base.isSubset(of: other)
   }
 
   @_disfavoredOverload
   public func isSuperset(of other: NonEmpty) -> Bool {
-    self.rawValue.isSuperset(of: other.rawValue)
+    self._base.isSuperset(of: other._base)
   }
 
   public func isSuperset(of other: Base) -> Bool {
-    self.rawValue.isSuperset(of: other)
+    self._base.isSuperset(of: other)
   }
 
   @_disfavoredOverload
   public func isStrictSubset(of other: NonEmpty) -> Bool {
-    self.rawValue.isStrictSubset(of: other.rawValue)
+    self._base.isStrictSubset(of: other._base)
   }
 
   public func isStrictSubset(of other: Base) -> Bool {
-    self.rawValue.isStrictSubset(of: other)
+    self._base.isStrictSubset(of: other)
   }
 
   @_disfavoredOverload
   public func isStrictSuperset(of other: NonEmpty) -> Bool {
-    self.rawValue.isStrictSuperset(of: other.rawValue)
+    self._base.isStrictSuperset(of: other._base)
   }
 
   public func isStrictSuperset(of other: Base) -> Bool {
-    self.rawValue.isStrictSuperset(of: other)
+    self._base.isStrictSuperset(of: other)
   }
 }
 
@@ -131,38 +131,38 @@ extension SetAlgebra where Self: Collection, Element: Hashable {
   }
 
   public func intersection(_ other: NonEmpty<Self>) -> Self {
-    self.intersection(other.rawValue)
+    self.intersection(other._base)
   }
 
   public func symmetricDifference(_ other: NonEmpty<Self>) -> Self {
-    self.symmetricDifference(other.rawValue)
+    self.symmetricDifference(other._base)
   }
 
   public mutating func formUnion(_ other: NonEmpty<Self>) {
-    self.formUnion(other.rawValue)
+    self.formUnion(other._base)
   }
 
   public func subtracting(_ other: NonEmpty<Self>) -> Self {
-    self.subtracting(other.rawValue)
+    self.subtracting(other._base)
   }
 
   public func isDisjoint(with other: NonEmpty<Self>) -> Bool {
-    self.isDisjoint(with: other.rawValue)
+    self.isDisjoint(with: other._base)
   }
 
   public func isSubset(of other: NonEmpty<Self>) -> Bool {
-    self.isSubset(of: other.rawValue)
+    self.isSubset(of: other._base)
   }
 
   public func isSuperset(of other: NonEmpty<Self>) -> Bool {
-    self.isSuperset(of: other.rawValue)
+    self.isSuperset(of: other._base)
   }
 
   public func isStrictSubset(of other: NonEmpty<Self>) -> Bool {
-    self.isStrictSubset(of: other.rawValue)
+    self.isStrictSubset(of: other._base)
   }
 
   public func isStrictSuperset(of other: NonEmpty<Self>) -> Bool {
-    self.isStrictSuperset(of: other.rawValue)
+    self.isStrictSuperset(of: other._base)
   }
 }

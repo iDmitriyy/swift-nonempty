@@ -36,13 +36,13 @@ extension NonEmpty: ExpressibleByStringLiteral where Base: ExpressibleByStringLi
 
 extension NonEmpty: TextOutputStreamable where Base: TextOutputStreamable {
   public func write<Target>(to target: inout Target) where Target: TextOutputStream {
-    self.rawValue.write(to: &target)
+    self._base.write(to: &target)
   }
 }
 
 extension NonEmpty: TextOutputStream where Base: TextOutputStream {
   public mutating func write(_ string: String) {
-    self.rawValue.write(string)
+    self._base.write(string)
   }
 }
 
@@ -64,9 +64,9 @@ extension NonEmpty where Base: StringProtocol {
   public typealias UTF16View = Base.UTF16View
   public typealias UnicodeScalarView = Base.UnicodeScalarView
 
-  public var utf8: UTF8View { self.rawValue.utf8 }
-  public var utf16: UTF16View { self.rawValue.utf16 }
-  public var unicodeScalars: UnicodeScalarView { self.rawValue.unicodeScalars }
+  public var utf8: UTF8View { self._base.utf8 }
+  public var utf16: UTF16View { self._base.utf16 }
+  public var unicodeScalars: UnicodeScalarView { self._base.unicodeScalars }
 
   public init<C, Encoding>(
     decoding codeUnits: C, as sourceEncoding: Encoding.Type
@@ -88,21 +88,21 @@ extension NonEmpty where Base: StringProtocol {
   public func withCString<Result>(_ body: (UnsafePointer<CChar>) throws -> Result) rethrows
     -> Result
   {
-    try self.rawValue.withCString(body)
+    try self._base.withCString(body)
   }
 
   public func withCString<Result, Encoding>(
     encodedAs targetEncoding: Encoding.Type,
     _ body: (UnsafePointer<Encoding.CodeUnit>) throws -> Result
   ) rethrows -> Result where Encoding: _UnicodeEncoding {
-    try self.rawValue.withCString(encodedAs: targetEncoding, body)
+    try self._base.withCString(encodedAs: targetEncoding, body)
   }
 
   public func lowercased() -> NonEmptyString {
-    NonEmptyString(self.rawValue.lowercased())!
+    NonEmptyString(self._base.lowercased())!
   }
 
   public func uppercased() -> NonEmptyString {
-    NonEmptyString(self.rawValue.uppercased())!
+    NonEmptyString(self._base.uppercased())!
   }
 }

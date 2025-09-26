@@ -139,7 +139,7 @@ final class NonEmptyTests: XCTestCase {
 
     XCTAssertEqual(xs, ys)
     XCTAssertEqual(xs, ["b": "demo", "a": "test"])
-    XCTAssertEqual(xs.rawValue, ["b": "demo", "a": "test"])
+    XCTAssertEqual(xs._base, ["b": "demo", "a": "test"])
   }
 
   func testDictionary() {
