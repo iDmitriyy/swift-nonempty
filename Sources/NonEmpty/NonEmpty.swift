@@ -169,7 +169,7 @@ extension NonEmpty {
   @inlinable @inline(__always)
   public var _baseReadModify: Base {
     read { yield _base }
-    modify { yield &_base }
+    modify { yield &_base } // is it actual?: https://github.com/apple/swift-collections/issues/164
   }
   
   @inlinable @inline(__always)
