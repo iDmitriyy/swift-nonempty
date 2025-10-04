@@ -28,7 +28,7 @@ public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
     self._base.index(after: i)
   }
 
-  public var first: Element { self._base.first! }
+  public var first: Element { self._base.first! } // or _base[0] is faster?
 
   public func max(by areInIncreasingOrder: (Element, Element) throws -> Bool) rethrows -> Element {
     try self._base.max(by: areInIncreasingOrder)!
