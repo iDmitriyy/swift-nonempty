@@ -1,31 +1,37 @@
 // NB: `NonEmpty` does not conditionally conform to `RangeReplaceableCollection` because it contains destructive methods.
 extension NonEmpty where Base: RangeReplaceableCollection {
+  @inlinable @inline(__always)
   public init(_ head: Element, _ tail: Element...) {
-    var tail = tail
-    tail.insert(head, at: tail.startIndex)
-    self.init(rawValue: Base(tail))!
+    var result = Base()
+    result.reserveCapacity(tail.count + 1)
+        
+    result.append(head)
+    result.append(contentsOf: tail)
+    
+    self.init(_unsafeAssumedNonEmpty: result)
   }
 
+  @inlinable @inline(__always)
   public init?<S>(_ elements: S) where S: Sequence, Base.Element == S.Element {
     self.init(rawValue: Base(elements))
   }
 
   public mutating func append(_ newElement: Element) {
-    self._base.append(newElement)
+    _base.append(newElement)
   }
 
   public mutating func append<S: Sequence>(contentsOf newElements: S) where Element == S.Element {
-    self._base.append(contentsOf: newElements)
+    _base.append(contentsOf: newElements)
   }
 
   public mutating func insert(_ newElement: Element, at i: Index) {
-    self._base.insert(newElement, at: i)
+    _base.insert(newElement, at: i)
   }
 
   public mutating func insert<S>(
-    contentsOf newElements: S, at i: Index
+    contentsOf newElements: S, at i: Index,
   ) where S: Swift.Collection, Element == S.Element {
-    self._base.insert(contentsOf: newElements, at: i)
+    _base.insert(contentsOf: newElements, at: i)
   }
 
   public static func += <S: Sequence>(lhs: inout Self, rhs: S) where Element == S.Element {
@@ -52,16 +58,16 @@ extension NonEmpty where Base: RangeReplaceableCollection {
 }
 
 extension NonEmpty {
-  public func joined<S: Sequence, C: RangeReplaceableCollection>(
-    separator: S
+  public func joined<C: RangeReplaceableCollection>(
+    separator: some Sequence<C.Element>,
   )
     -> NonEmpty<C>
-  where Element == NonEmpty<C>, S.Element == C.Element {
-    NonEmpty<C>(rawValue: C(self._base.joined(separator: separator)))!
+    where Element == NonEmpty<C> {
+    NonEmpty<C>(rawValue: C(_base.joined(separator: separator)))!
   }
 
   public func joined<C: RangeReplaceableCollection>() -> NonEmpty<C>
-  where Element == NonEmpty<C> {
-    return joined(separator: C())
+    where Element == NonEmpty<C> {
+    joined(separator: C())
   }
 }
