@@ -4,12 +4,12 @@ public protocol _DictionaryProtocol: Collection where Element == (key: Key, valu
   associatedtype Key: Hashable
   associatedtype Value
   var keys: Dictionary<Key, Value>.Keys { get }
-  subscript(key: Key) -> Value? { get set }
-  mutating func merge<S: Sequence>(
-    _ other: S, uniquingKeysWith combine: (Value, Value) throws -> Value
-  ) rethrows where S.Element == (Key, Value)
+  subscript(_: Key) -> Value? { get set }
   mutating func merge(
-    _ other: [Key: Value], uniquingKeysWith combine: (Value, Value) throws -> Value
+    _ other: some Sequence<(Key, Value)>, uniquingKeysWith combine: (Value, Value) throws -> Value,
+  ) rethrows
+  mutating func merge(
+    _ other: [Key: Value], uniquingKeysWith combine: (Value, Value) throws -> Value,
   ) rethrows
   @discardableResult mutating func removeValue(forKey key: Key) -> Value?
   @discardableResult mutating func updateValue(_ value: Value, forKey key: Key) -> Value?
@@ -28,7 +28,7 @@ extension NonEmpty where Base: _DictionaryProtocol {
   public init(
     _ head: Element,
     _ tail: Base,
-    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value,
   ) rethrows {
 
     var tail = tail
@@ -41,21 +41,21 @@ extension NonEmpty where Base: _DictionaryProtocol {
   }
 
   public subscript(key: Base.Key) -> Base.Value? {
-    self._base[key]
+    _base[key]
   }
 
-  public mutating func merge<S: Sequence>(
-    _ other: S,
-    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
-  ) rethrows where S.Element == (Base.Key, Base.Value) {
+  public mutating func merge(
+    _ other: some Sequence<(Base.Key, Base.Value)>,
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value,
+  ) rethrows {
 
-    try self._base.merge(other, uniquingKeysWith: combine)
+    try _base.merge(other, uniquingKeysWith: combine)
   }
 
-  public func merging<S: Sequence>(
-    _ other: S,
-    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
-  ) rethrows -> NonEmpty where S.Element == (Base.Key, Base.Value) {
+  public func merging(
+    _ other: some Sequence<(Base.Key, Base.Value)>,
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value,
+  ) rethrows -> NonEmpty {
 
     var copy = self
     try copy.merge(other, uniquingKeysWith: combine)
@@ -64,15 +64,15 @@ extension NonEmpty where Base: _DictionaryProtocol {
 
   public mutating func merge(
     _ other: [Base.Key: Base.Value],
-    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value,
   ) rethrows {
 
-    try self._base.merge(other, uniquingKeysWith: combine)
+    try _base.merge(other, uniquingKeysWith: combine)
   }
 
   public func merging(
     _ other: [Base.Key: Base.Value],
-    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value
+    uniquingKeysWith combine: (Base.Value, Base.Value) throws -> Base.Value,
   ) rethrows -> NonEmpty {
 
     var copy = self
@@ -82,15 +82,14 @@ extension NonEmpty where Base: _DictionaryProtocol {
 
   @discardableResult
   public mutating func updateValue(_ value: Base.Value, forKey key: Base.Key)
-    -> Base.Value?
-  {
-    self._base.updateValue(value, forKey: key)
+    -> Base.Value? {
+    _base.updateValue(value, forKey: key)
   }
 }
 
 extension NonEmpty where Base: _DictionaryProtocol, Base.Value: Equatable {
   public static func == (lhs: NonEmpty, rhs: NonEmpty) -> Bool {
-    return Dictionary(uniqueKeysWithValues: Array(lhs))
+    Dictionary(uniqueKeysWithValues: Array(lhs))
       == Dictionary(uniqueKeysWithValues: Array(rhs))
   }
 }

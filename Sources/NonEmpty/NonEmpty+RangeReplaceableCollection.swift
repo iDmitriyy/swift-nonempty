@@ -50,49 +50,52 @@ extension NonEmpty where Base: RangeReplaceableCollection {
     self.init(rawValue: Base(elements))
   }
 
-  public mutating func append(_ newElement: Element) {
+  @inlinable public mutating func append(_ newElement: Element) {
     _base.append(newElement)
   }
 
-  public mutating func append<S: Sequence>(contentsOf newElements: S) where Element == S.Element {
+  @inlinable public mutating func append<S: Sequence>(contentsOf newElements: S) where Element == S.Element {
     _base.append(contentsOf: newElements)
   }
 
-  public mutating func insert(_ newElement: Element, at i: Index) {
+  @inlinable public mutating func insert(_ newElement: Element, at i: Index) {
     _base.insert(newElement, at: i)
   }
 
-  public mutating func insert<S>(
+  @inlinable public mutating func insert<S>(
     contentsOf newElements: S, at i: Index,
   ) where S: Swift.Collection, Element == S.Element {
     _base.insert(contentsOf: newElements, at: i)
   }
 
-  public static func += <S: Sequence>(lhs: inout Self, rhs: S) where Element == S.Element {
+  @inlinable public static func += <S: Sequence>(lhs: inout Self, rhs: S) where Element == S.Element {
     lhs.append(contentsOf: rhs)
   }
 
-  public static func + (lhs: Self, rhs: Self) -> Self {
+  @inlinable public static func + (lhs: Self, rhs: Self) -> Self {
     var lhs = lhs
     lhs += rhs
     return lhs
   }
 
-  public static func + <S: Sequence>(lhs: Self, rhs: S) -> Self where Element == S.Element {
+  @inlinable public static func + <S: Sequence>(lhs: Self, rhs: S) -> Self where Element == S.Element {
     var lhs = lhs
     lhs += rhs
     return lhs
   }
 
+  // TODO: - might be inefficient | ContiguousArray(lhs)
   public static func + <S: Sequence>(lhs: S, rhs: Self) -> Self where Element == S.Element {
     var rhs = rhs
     rhs.insert(contentsOf: ContiguousArray(lhs), at: rhs.startIndex)
+    
+    
     return rhs
   }
 }
 
 extension NonEmpty {
-  public func joined<C: RangeReplaceableCollection>(
+  @inlinable public func joined<C: RangeReplaceableCollection>(
     separator: some Sequence<C.Element>,
   )
     -> NonEmpty<C>
@@ -100,7 +103,7 @@ extension NonEmpty {
     NonEmpty<C>(rawValue: C(_base.joined(separator: separator)))!
   }
 
-  public func joined<C: RangeReplaceableCollection>() -> NonEmpty<C>
+  @inlinable public func joined<C: RangeReplaceableCollection>() -> NonEmpty<C>
     where Element == NonEmpty<C> {
     joined(separator: C())
   }

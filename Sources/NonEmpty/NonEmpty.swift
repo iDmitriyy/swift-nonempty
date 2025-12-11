@@ -6,49 +6,50 @@ public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
   @usableFromInline var _base: Base
   
   @available(*, deprecated, message: "Will be obsoleted. Use `base` property instead")
-  public var rawValue: Base { _base }
+  @inlinable @inline(__always) public var rawValue: Base { _base }
 
   @available(*, deprecated, message: "Use `init?(base: Base)` instead")
+  @inlinable @inline(__always)
   public init?(rawValue: Base) {
     guard !rawValue.isEmpty else { return nil }
     self._base = rawValue
   }
 
-  public subscript<Subject>(dynamicMember keyPath: KeyPath<Base, Subject>) -> Subject {
+  @inlinable @inline(__always) public subscript<Subject>(dynamicMember keyPath: KeyPath<Base, Subject>) -> Subject {
     self._base[keyPath: keyPath]
   }
 
-  public var startIndex: Index { self._base.startIndex }
+  @inlinable @inline(__always) public var startIndex: Index { self._base.startIndex }
 
-  public var endIndex: Index { self._base.endIndex }
+  @inlinable @inline(__always) public var endIndex: Index { self._base.endIndex }
 
-  public subscript(position: Index) -> Element { self._base[position] }
+  @inlinable @inline(__always) public subscript(position: Index) -> Element { self._base[position] }
 
-  public func index(after i: Index) -> Index {
+  @inlinable @inline(__always) public func index(after i: Index) -> Index {
     self._base.index(after: i)
   }
 
-  public var first: Element { self._base.first! } // or _base[0] is faster?
+  @inlinable @inline(__always) public var first: Element { self._base.first! } // or _base[0] is faster?
 
-  public func max(by areInIncreasingOrder: (Element, Element) throws -> Bool) rethrows -> Element {
+  @inlinable public func max(by areInIncreasingOrder: (Element, Element) throws -> Bool) rethrows -> Element {
     try self._base.max(by: areInIncreasingOrder)!
   }
 
-  public func min(by areInIncreasingOrder: (Element, Element) throws -> Bool) rethrows -> Element {
+  @inlinable public func min(by areInIncreasingOrder: (Element, Element) throws -> Bool) rethrows -> Element {
     try self._base.min(by: areInIncreasingOrder)!
   }
 
-  public func sorted(
+  @inlinable public func sorted(
     by areInIncreasingOrder: (Element, Element) throws -> Bool,
   ) rethrows -> NonEmpty<[Element]> {
     try NonEmpty<[Element]>(rawValue: self._base.sorted(by: areInIncreasingOrder))!
   }
 
-  public func randomElement(using generator: inout some RandomNumberGenerator) -> Element {
+  @inlinable public func randomElement(using generator: inout some RandomNumberGenerator) -> Element {
     self._base.randomElement(using: &generator)!
   }
 
-  public func randomElement() -> Element {
+  @inlinable public func randomElement() -> Element {
     self._base.randomElement()!
   }
 
@@ -56,15 +57,15 @@ public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
     NonEmpty<[Element]>(rawValue: self._base.shuffled(using: &generator))!
   }
 
-  public func shuffled() -> NonEmpty<[Element]> {
+  @inlinable public func shuffled() -> NonEmpty<[Element]> {
     NonEmpty<[Element]>(rawValue: self._base.shuffled())!
   }
-
-  public func map<T>(_ transform: (Element) throws -> T) rethrows -> NonEmpty<[T]> {
+  
+  @inlinable public func map<T, E>(_ transform: (Self.Element) throws(E) -> T) throws(E) -> NonEmpty<[T]> {
     try NonEmpty<[T]>(rawValue: self._base.map(transform))!
   }
 
-  public func flatMap<SegmentOfResult>(
+  @inlinable public func flatMap<SegmentOfResult>(
     _ transform: (Element) throws -> NonEmpty<SegmentOfResult>,
   ) rethrows -> NonEmpty<[SegmentOfResult.Element]> where SegmentOfResult: Sequence {
     try NonEmpty<[SegmentOfResult.Element]>(rawValue: self._base.flatMap(transform))!
@@ -72,7 +73,7 @@ public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
 }
 
 extension NonEmpty: CustomStringConvertible {
-  public var description: String {
+  @inlinable @inline(__always) public var description: String {
     String(describing: self._base)
   }
 }
@@ -82,7 +83,7 @@ extension NonEmpty: Equatable where Base: Equatable {}
 extension NonEmpty: Hashable where Base: Hashable {}
 
 extension NonEmpty: Comparable where Base: Comparable {
-  public static func < (lhs: Self, rhs: Self) -> Bool {
+  @inlinable @inline(__always) public static func < (lhs: Self, rhs: Self) -> Bool {
     lhs._base < rhs._base
   }
 }
@@ -123,29 +124,29 @@ extension NonEmpty: Decodable where Base: Decodable {
 // extension NonEmpty: RawRepresentable {}
 
 extension NonEmpty where Base.Element: Comparable {
-  public func max() -> Element {
+  @inlinable public func max() -> Element {
     self._base.max()!
   }
 
-  public func min() -> Element {
+  @inlinable public func min() -> Element {
     self._base.min()!
   }
 
-  public func sorted() -> NonEmpty<[Element]> {
+  @inlinable public func sorted() -> NonEmpty<[Element]> {
     NonEmpty<[Element]>(rawValue: self._base.sorted())!
   }
 }
 
 extension NonEmpty: BidirectionalCollection where Base: BidirectionalCollection {
-  public func index(before i: Index) -> Index {
+  @inlinable public func index(before i: Index) -> Index {
     self._base.index(before: i)
   }
 
-  public var last: Element { self._base.last! }
+  @inlinable @inline(__always) public var last: Element { self._base.last! }
 }
 
 extension NonEmpty: MutableCollection where Base: MutableCollection {
-  public subscript(position: Index) -> Element {
+  @inlinable @inline(__always) public subscript(position: Index) -> Element {
     _read { yield self._base[position] }
     _modify { yield &self._base[position] }
   }
@@ -154,7 +155,7 @@ extension NonEmpty: MutableCollection where Base: MutableCollection {
 extension NonEmpty: RandomAccessCollection where Base: RandomAccessCollection {}
 
 extension NonEmpty where Base: MutableCollection & RandomAccessCollection {
-  public mutating func shuffle(using generator: inout some RandomNumberGenerator) {
+  @inlinable public mutating func shuffle(using generator: inout some RandomNumberGenerator) {
     self._base.shuffle(using: &generator)
   }
 }
@@ -182,7 +183,7 @@ extension NonEmpty {
 }
 
 extension NonEmpty {
-  @inlinable public var base: Base { _base }
+  @inlinable @inline(__always) public var base: Base { _base }
   
   @inlinable @inline(__always)
   public init?(base: Base) {
