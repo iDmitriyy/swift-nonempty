@@ -29,7 +29,7 @@ public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
     self._base.index(after: i)
   }
 
-  @inlinable @inline(__always) public var first: Element { self._base.first! } // or _base[0] is faster?
+  @inlinable @inline(__always) public var first: Element { self._base.first! }
 
   @inlinable public func max(by areInIncreasingOrder: (Element, Element) throws -> Bool) rethrows -> Element {
     try self._base.max(by: areInIncreasingOrder)!
@@ -45,19 +45,19 @@ public struct NonEmpty<Base: Swift.Collection>: Swift.Collection {
     try NonEmpty<[Element]>(rawValue: self._base.sorted(by: areInIncreasingOrder))!
   }
 
-  @inlinable public func randomElement(using generator: inout some RandomNumberGenerator) -> Element {
+  @inlinable @inline(__always) public func randomElement(using generator: inout some RandomNumberGenerator) -> Element {
     self._base.randomElement(using: &generator)!
   }
 
-  @inlinable public func randomElement() -> Element {
+  @inlinable @inline(__always) public func randomElement() -> Element {
     self._base.randomElement()!
   }
 
-  public func shuffled(using generator: inout some RandomNumberGenerator) -> NonEmpty<[Element]> {
+  @inlinable @inline(__always) func shuffled(using generator: inout some RandomNumberGenerator) -> NonEmpty<[Element]> {
     NonEmpty<[Element]>(rawValue: self._base.shuffled(using: &generator))!
   }
 
-  @inlinable public func shuffled() -> NonEmpty<[Element]> {
+  @inlinable @inline(__always) public func shuffled() -> NonEmpty<[Element]> {
     NonEmpty<[Element]>(rawValue: self._base.shuffled())!
   }
   
@@ -124,21 +124,21 @@ extension NonEmpty: Decodable where Base: Decodable {
 // extension NonEmpty: RawRepresentable {}
 
 extension NonEmpty where Base.Element: Comparable {
-  @inlinable public func max() -> Element {
+  @inlinable @inline(__always) public func max() -> Element {
     self._base.max()!
   }
 
-  @inlinable public func min() -> Element {
+  @inlinable @inline(__always) public func min() -> Element {
     self._base.min()!
   }
 
-  @inlinable public func sorted() -> NonEmpty<[Element]> {
+  @inlinable @inline(__always) public func sorted() -> NonEmpty<[Element]> {
     NonEmpty<[Element]>(rawValue: self._base.sorted())!
   }
 }
 
 extension NonEmpty: BidirectionalCollection where Base: BidirectionalCollection {
-  @inlinable public func index(before i: Index) -> Index {
+  @inlinable @inline(__always) public func index(before i: Index) -> Index {
     self._base.index(before: i)
   }
 
@@ -155,7 +155,7 @@ extension NonEmpty: MutableCollection where Base: MutableCollection {
 extension NonEmpty: RandomAccessCollection where Base: RandomAccessCollection {}
 
 extension NonEmpty where Base: MutableCollection & RandomAccessCollection {
-  @inlinable public mutating func shuffle(using generator: inout some RandomNumberGenerator) {
+  @inlinable @inline(__always) public mutating func shuffle(using generator: inout some RandomNumberGenerator) {
     self._base.shuffle(using: &generator)
   }
 }
