@@ -5,6 +5,8 @@ extension NonEmpty where Base: RangeReplaceableCollection {
     var result = Base()
     result.reserveCapacity(1) // ? is it ok to reserve for 1 element
     result.append(a)
+    // initializing Array with array literal (like [a]) is twice as faster then reserveCapacity + .aapend
+    // for 2 / 3 / 4 elements the difference is more
     self.init(_unsafeAssumedNonEmpty: result)
   }
   
